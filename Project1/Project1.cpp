@@ -3,15 +3,15 @@
 
 using namespace std;
 
-vector< vector <int> > multiply(vector <vector <int> > Matrix1, vector <vector <int> > Matrix2, vector <vector <int> > Matrix3) {
+vector< vector <int> > multiply(vector <vector <int> > Matrix1, vector <vector <int> > Matrix2) {
   int m1rows,m1columns,m2rows,m2columns;
-  cout << endl;
+ cout << endl;
   
   m1rows = Matrix1.size();
   m1columns = Matrix1[0].size();
   m2rows = Matrix2.size();
   m2columns = Matrix2[0].size();
-  
+  vector< vector <int> > Matrix3(m1rows,vector <int>(m2columns));
   for (int i = 0; i < m2columns; i++) {
     for (int j = 0; j < m2rows; j++) {
       for (int k = 0; k < m1rows; k++) {
@@ -19,6 +19,7 @@ vector< vector <int> > multiply(vector <vector <int> > Matrix1, vector <vector <
       }
     }
   }
+  return Matrix3;
 }
 
 void displayMatrix(vector <vector<int> > Matrix) {
@@ -84,9 +85,9 @@ int main() {
   displayMatrix(Matrix2);
 
   //Multiply the two matricies
-  // Matrix3 = multiply(Matrix1,Matrix2,Matrix3);
+  Matrix3 = multiply(Matrix1,Matrix2);
   
   //Display output of multiplication
-  // displayMatrix(Matrix3);
+  displayMatrix(Matrix3);
   return 0;
 }
