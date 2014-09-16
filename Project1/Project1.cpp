@@ -19,6 +19,12 @@ int main() {
   cin >> Matrix1Columns;
   cin >> Matrix2Rows;
   cin >> Matrix2Columns;
+  
+  if (Matrix1Columns != Matrix2Rows) {
+    cout << "These two matrices can not be multiplied." << endl;
+    cout << "Run the program again and enter compatible matrix dimensions." << endl;
+    return 0;
+  }
 
   //Declare matrix variables
   vector< vector<int> >Matrix1(Matrix1Rows, vector<int>(Matrix1Columns));
