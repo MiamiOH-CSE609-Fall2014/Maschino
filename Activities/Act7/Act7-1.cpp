@@ -1,0 +1,17 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+  string line1,line2,line3;
+
+  getline(cin,line1);
+  getline(cin,line2);
+  getline(cin,line3);
+  
+  cout << "\n" << "#" << line1 << endl;
+  cout << "#" << line2 << endl;
+  cout << "#" << line3 << "\n" << endl;
+
+  return 0;
+}
