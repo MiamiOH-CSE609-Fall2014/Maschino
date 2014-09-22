@@ -32,7 +32,7 @@ int main() {
   }
 }
   void menu() {
-  cout << "\nMenu:" << "\n" << "'p' - print" <<  endl;
-  cout << "'a' - add" << "\n'e' - edit" << endl;
-  cout << "'d' - deleted" << "\n'q' - quit\n" << endl;
+  cout << "\nMenu:" << "\n" << "\t'p' - print" <<  endl;
+  cout << "\t'a' - add" << "\n\t'e' - edit" << endl;
+  cout << "\t'd' - deleted" << "\n\t'q' - quit\n" << endl;
 }
