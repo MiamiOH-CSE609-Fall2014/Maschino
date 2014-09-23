@@ -6,7 +6,7 @@ using namespace std;
 int main() {
 
   const int n = 10; //Number of events
-  const double lambda = 8.0;
+  const double lambda = 8.0; //rate of arrival
   const int mu1 = 5;
   const int mu2 = 5;
   const int buff1 = 20;
