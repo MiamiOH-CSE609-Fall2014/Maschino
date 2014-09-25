@@ -12,16 +12,26 @@ int main() {
   const int buff1 = 20;
   const int buff2 = 20;
   vector<float> time(n);
+  //  vector<int> link(n); //0 = link 1, 1 = link 2
 
   unsigned seed = chrono::system_clock::now().time_since_epoch().count();
   default_random_engine generator(seed);
   poisson_distribution<int> distribution(1000*(1/lambda));
+  //uniform_distribution<int> linkDistribution(.2);
 
   for (int i=0; i<n; i++) {
     time[i] = distribution(generator);
-    time[i] = time[i]/1000;
-    cout << time[i] << endl;
+    time[i] = time[i]/1000;   
   }
+  /*
+  for (int i=0; i<n; i++) {
+    link[i] = 1;//linkDistribution(linkGenerator);
+  }
+
+  /*for (int i=0; i<n; i++) {
+     cout << "Arrival time: " << time[i] << endl;
+     cout << "Link used: " << link[i] << endl;
+     }*/
 
   return 0;
 }
