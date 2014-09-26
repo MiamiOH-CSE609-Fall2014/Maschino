@@ -26,6 +26,12 @@ int main() {
     return 0;
   }
 
+  if ((Matrix1Rows < 0)||(Matrix1Columns < 0)||(Matrix2Rows < 0)|| (Matrix2Columns < 0)) {
+    cout << "A negative matrix dimension has been detected." << endl;
+    cout << "Run the program again and enter compatible matrix dimensions." << endl;
+    return 0;
+  }
+
   if (Matrix1Columns != Matrix2Rows) {
     cout << "These two matrices can not be multiplied." << endl;
     cout << "Run the program again and enter compatible matrix dimensions." << endl;

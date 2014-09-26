@@ -17,6 +17,28 @@ int main() {
   //  cout.precision(4);
 
   vector<float> time(n);
+<<<<<<< HEAD
+  //  vector<int> link(n); //0 = link 1, 1 = link 2
+
+  unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+  default_random_engine generator(seed);
+  poisson_distribution<int> distribution(1000*(1/lambda));
+  //uniform_distribution<int> linkDistribution(.2);
+
+  for (int i=0; i<n; i++) {
+    time[i] = distribution(generator);
+    time[i] = time[i]/1000;   
+  }
+  /*
+  for (int i=0; i<n; i++) {
+    link[i] = 1;//linkDistribution(linkGenerator);
+  }
+
+  /*for (int i=0; i<n; i++) {
+     cout << "Arrival time: " << time[i] << endl;
+     cout << "Link used: " << link[i] << endl;
+     }*/
+=======
   vector<int> link(n);
   vector<float> service(n);
 
@@ -63,6 +85,7 @@ int main() {
     time[i] = time[i]/1000;
     interarrivalTime = time[i];
     startTime = startTime + interarrivalTime;
+>>>>>>> 6a3d9c95c2a9a513e1d05ea72aa55a8d3cf831b5
 
     link[i] = 1;//linkDistribution(generator)+1;
     
