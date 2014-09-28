@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
 
-	const int n = 5000; //Number of events
+	const int n = 5500; //Number of events
 	const double lambda = 8.0; //rate of arrival
 	const double phi = 0.2; //probability of arrival to link 1
 	const double mu1 = 5.0;
@@ -16,13 +16,27 @@ int main() {
 	vector<int> link(n);
 	vector<float> service(n);
 	vector<float> arrivalEventList(n);
-	vector<float> departureEventList(n);
+	//vector<float> departureEventList(n);
+	
+	vector< vector<float> > departureEventList(2, vector<float>(n));
+	
 	vector<int> count(2);
 	vector<int> buffer(2);
 
 	float startTime;
 	float interarrivalTime;
 	double serviceTime;
+
+	int totalDroppedPackets = 0;
+	int totalServicedPackets = 0;
+	float blockingProbability = 0.0;
+	
+	vector<float> avgDelay(2);
+	vector<float> avgThroughput(2);
+	vector<int> linkThroughput(2);
+	
+	float averageNumberPackets = 0;
+	float avgSystemThroughput = 0;
 
 	count[0] = 0;
 	count[1] = 0;
@@ -41,7 +55,7 @@ int main() {
 	time[0] = time[0]/1000;
 	interarrivalTime = 0;
 	startTime = time[0] + interarrivalTime;
-	link[0] = 0;//linkDistribution(1,phi);
+	link[0] = linkDistribution(generator);
   
 	if (link[0] == 0) {
 		serviceTime = serviceLink1Distribution(generator);
@@ -51,7 +65,7 @@ int main() {
 	}
 
 	arrivalEventList[0] = startTime;
-	departureEventList[0] = startTime + serviceTime;
+	departureEventList[link[0]][0] = startTime + serviceTime;
 
 	cout << left << setw(15) << "Packet" <<
 		setw(20) << "Arrival Time" <<
@@ -65,7 +79,7 @@ int main() {
 		setw(20) << arrivalEventList[0] <<
 			setw(10) << link[0]+1 <<
 				setw(20) << serviceTime <<
-					setw(20) << departureEventList[0] <<
+					setw(20) << departureEventList[link[0]][0] <<
 						setw(10) << 0 <<
 							setw(10) << 0 << endl;
 
@@ -79,7 +93,7 @@ int main() {
 		
 		startTime = startTime + interarrivalTime;
 
-		link[i] = 0;//linkDistribution(generator);
+		link[i] = linkDistribution(generator);
     
 		if (link[i] == 0) {
 			serviceTime = serviceLink1Distribution(generator);
@@ -93,27 +107,27 @@ int main() {
 		count[link[i]] = 0;
 		for (int j = 0; j < i; j++) {
 			if (count[link[i]]>=buffer[link[i]]) {
-				departureEventList[i] = -1;
+				departureEventList[link[i]][i] = -1;
 			}
-			if (departureEventList[i-1]==-1 && departureEventList[i]!=-1) {
-				if (departureEventList[j]!=-1) {
-					departureEventList[i] = departureEventList[j] + serviceTime;
+			if (departureEventList[link[i]][i-1]==-1 && departureEventList[link[i]][i]!=-1) {
+				if (departureEventList[link[i]][j]!=-1) {
+					departureEventList[link[i]][i] = departureEventList[link[i]][j] + serviceTime;
 				}
-				if (arrivalEventList[i] < departureEventList[i-j-1]) {
+				if (arrivalEventList[i] < departureEventList[link[i]][i-j-1]) {
 					count[link[i]]++;
 				}
 			}
 			else if ((count[link[i]] < buffer[link[i]])) {
-				if (arrivalEventList[i] < departureEventList[i-j-1]) {
+				if (arrivalEventList[i] < departureEventList[link[i]][i-j-1]) {
 					count[link[i]]++;
-					departureEventList[i] = departureEventList[i-1] + serviceTime;
+					departureEventList[link[i]][i] = departureEventList[link[i]][i-1] + serviceTime;
 				}
-				if (arrivalEventList[i] >= departureEventList[i-1]) {
-					departureEventList[i] = arrivalEventList[i] + serviceTime;
+				if (arrivalEventList[i] >= departureEventList[link[i]][i-1]) {
+					departureEventList[link[i]][i] = arrivalEventList[i] + serviceTime;
 					continue;
 				}
-				else if ((arrivalEventList[i] >= departureEventList[j])) {
-					departureEventList[i] = departureEventList[i-1] + serviceTime;
+				else if ((arrivalEventList[i] >= departureEventList[link[i]][j])) {
+					departureEventList[link[i]][i] = departureEventList[link[i]][i-1] + serviceTime;
 				}
 			}
 			
@@ -124,17 +138,33 @@ int main() {
 				setw(10) << link[i]+1;
 					
    
-		if (departureEventList[i] == -1) {
+		if (departureEventList[link[i]][i] == -1) {
 			cout << left << setw(20) << "drop" <<
 				setw(20) << "drop";
+			if(i > 500) {
+				totalDroppedPackets++;
+			}
 		}
 		else {
 			cout << left << setw(20) << serviceTime << 
-				setw(20) << departureEventList[i];
+				setw(20) << departureEventList[link[i]][i];
+			
+			if(i >= 500) {
+					linkThroughput[link[i]]++;
+			}
 		}
 
-		cout << left << setw(10) << count[link[i]] <<
-			setw(10) << 0 << endl;
+		cout << left << setw(10) << count[0] <<
+			setw(10) <<  count[1] << endl;
 	}
+	
+	totalServicedPackets = n-500-totalDroppedPackets;
+	blockingProbability = float(totalDroppedPackets)/(n-500);
+	
+	cout << "Total serviced packets: " << totalServicedPackets << endl;
+	cout << "Link 1 throughput: " << linkThroughput[0] << endl;
+	cout << "Link 2 throughput: " << linkThroughput[1] << endl;
+	cout << "Total dropped packets: " << totalDroppedPackets << endl;
+	cout << "Bocking probability: " << blockingProbability << " = " << blockingProbability*100 << "%" << endl;
 	return 0;
 }
