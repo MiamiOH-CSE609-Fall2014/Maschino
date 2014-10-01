@@ -14,7 +14,7 @@ void getInput(int &r, int &c);
 
 int main() {
   
-  getInput(rows,columns); 
+  getInput(rows,columns);
 }
 
 void getInput(int &r, int &c) {
@@ -26,11 +26,18 @@ void getInput(int &r, int &c) {
     cout << "Enter the columns: ";
     cin >> c;
 
-     if (r > max_rows || c > max_columns) {
-       throw out_of_range("Matrix rows or columns are greater than the maximum allowed.");
+     if (r > max_rows) {
+       throw out_of_range("Matrix rows are greater than the maximum allowed.");
     }
+     if (c > max_columns) {
+       throw out_of_range("Matrix columns are greater than the maximum allowed.");
+     }
      if ((r * c) > max_values) {
        throw range_error("The total size of the matrix exceeds the total allowed size.");
+     }
+     else {
+       int matrix[rows][columns];
+       cout << "A " << rows << " x " << columns << " matrix has been created." << endl;
      }
   }
   catch (out_of_range err) {
@@ -49,12 +56,4 @@ void getInput(int &r, int &c) {
       getInput(rows,columns);
     }
   }
-  /*
-  if (r > max_rows || c > max_columns) {
-    throw out_of_range("The input is too large");
-  }
-  else {
-    rows = r;
-    columns = c;
-    }*/
 }
