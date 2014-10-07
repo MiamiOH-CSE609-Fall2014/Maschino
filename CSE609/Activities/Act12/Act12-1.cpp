@@ -7,20 +7,23 @@ int main() {
   
   string filename;
   string input;
-  cout << "\nEnter a file name:";
+  cout << "\nEnter a file name: ";
   cin >> filename;
-  fstream myfile;
+  cin.ignore();
+
+  ofstream myfile;
   filename = filename + ".txt";
 
   cout <<"\nFile name is: " << filename << endl;
   myfile.open(filename.c_str());
-
+  if (myfile.is_open()) {
   while(getline(cin,input)) {
 
-    myfile << input << endl;
+    myfile << input << "\n";
 
   }
   myfile.close();
+  }
   return 0;
 
 }
