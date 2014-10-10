@@ -29,7 +29,7 @@ int main() {
   welcome();
   getInput();
 
-  //  section.push_back(student());
+  section.push_back(student());
 
   cout << "Student's name is: " << section[0].name << endl;
 

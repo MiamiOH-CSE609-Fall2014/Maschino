@@ -1,0 +1,67 @@
+Title:          Curving Grades
+ 
+Purpose:      Using a curve to determine letter grades for a test actually means to assume that the grades approximate a normal distribution.  That assumption means that grades near the mean are given the grade C, those a little above the mean are assigned a B, those a little below are given a D, and those significantly above at below the mean are assigned an A or F, respectively.  More precisely, this is determined by the following:
+
+ 
+
+A - more that one and a half standard deviations above the mean.
+
+B - between half and one and a half standard deviations above the mean.
+
+C - within a half of a standard deviation above or below the mean.
+
+D - between half and one and a half standard deviations below the mean.
+
+F - more that one and a half standard deviations below the mean.
+
+ 
+
+Thus, if the mean of the test scores is 75.0 and the standard deviation is 10, then the C's range from 70 to 80, B's from 80 to 90, D's from 60 to 70, A's above 90, and F's below 60.
+
+ 
+
+Write a C++ program that allows a teacher to input the names and test scores for a class, finds the average and the standard deviation, and prints a list of each student's name, the corresponding test score, and the letter grade on the test.
+
+Method:       The standard deviation is defined as the square root of the sum of the squares of the deviation of each score from the mean divided by the number of scores   Thus, if M is the mean (average) of the test scores, xi represents the ith test score, and N is the number of scores, then the following formula gives the standard deviation:
+
+sqrt ( (  (x1 - M)2 + (x2 - M)2 +  (x3 - M)2 + . . . +  (xN - M)2 ) / N )
+
+The standard deviation is a measure of how spread out the data is.  A large value of the standard deviation means that there is some data scattered quite far from the mean.  A small standard deviation means the data are clustered around the mean.
+
+Note that with particular choices of test scores, it is possible to have a grade scale in which it is impossible to get an A.
+
+Output:        First print out the grading scale with one decimal point to the right of the decimal point.  If the range for A's starts at above 100, e.g. at 102.3, then print out "above 100.0%.   Print the students' names followed by their test score and their letter grade with appropriate headings.  All of these should be printed in columns as shown in the example below.  The print the class average and the standard deviation.  Print these with 2 places to the right of the decimal point.  Number the list of students' names.  Thus, the output appears as follows:
+
+ 
+
+Grading scale
+
+A   above 92.3%
+
+B   82.1% - 92.3%
+
+C   72.0% - 82.1%
+
+D   61.8% - 72.0%
+
+F   below 61.8 %
+
+ 
+
+Name                       Score                 Grade
+
+1.  Jim Smith           75.2%               C
+
+2.  Sally Jones          90.3%               B
+
+3.  Doug Miller         65.6%               D
+
+ 
+
+Class average = 77.03%
+
+                                    Standard Deviation = 10.17
+
+Input:          This program should print a prompt for the name, then allow the first and last names to be entered on a single line.  (Use the getline() function to do this.)   Then, prompt the user for that student’s test score.  Valid test scores are integers in the range 0 to 100.  Give an error message if the score is not in this range, and ask for another score.  Continue with the next student’s name and score.  Stop inputting values when the user types “none” when prompted for a user name.  (Your prompt should tell the user how to end, e.g., “Please enter a student’s name, or ‘none’ to quit.”)
+
+Project Submission:  The version of your project that is in GitHub at the time of the due date will be the one that is graded (even if a newer version exists at the time of grading). If for some reason you would like for me to grade a prior version of your code (that was committed prior to the due date), you can email me and specify the version. After you commit and push to GitHub, I strongly recommend that you browse to GitHub using a web browser and verify that the version of your code that you want graded shows up in the web interface.
