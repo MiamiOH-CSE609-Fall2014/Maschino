@@ -1,141 +1,279 @@
 #include <iostream>
+#include <iomanip>
 #include <random>
-
 
 using namespace std;
 
+/*---------- Start variable declaration ----------*/
+const int n = 5500; //Number of events
+const double lambda = 8.0; //mean rate of arrival
+const double phi = 0.5; //probability of arrival to link 1
+const double mu1 = 5.0; //mean rate of service
+const double mu2 = 5.0; //mean rate of service
+
+vector<double> times(n);
+vector<int> link(n);
+vector<double> arrivalEventList(n);
+//vector<double> departureEventList(n);
+
+vector< vector<double> > departureEventList(2, vector<double>(n));
+vector<int> packetCount(2);
+vector<int> buffer(2);
+
+double startTime;
+double interarrivalTime = 0.0;
+double serviceTime;
+
+int totalDroppedPackets = 0;
+int totalServicedPackets = 0;
+double blockingProbability = 0.0;
+
+vector<double> avgDelay(2);
+vector<double> avgThroughput(2);
+vector<int> linkThroughput(2);
+
+double averageNumberPackets = 0.0;
+double avgSystemThroughput = 0.0;
+
+double diagnosticStartTime = 0.0;
+
+unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+default_random_engine generator(seed);
+
+exponential_distribution<double> arrivalDistribution(lambda);
+binomial_distribution<int> linkDistribution(1,1-phi);
+exponential_distribution<double> serviceLink1Distribution(mu1);
+exponential_distribution<double> serviceLink2Distribution(mu2);
+/*---------- End variable declaration ----------*/
+
+void printHeaders();
+void getArrivalTime(int x);
+void getLink(int x);
+void getServiceTime(int x);
+void getDepartureTime(int x);
+void printData(int x);
+void diagnostics();
+void printDiagnostics();
+
 int main() {
 
-  const int n = 1000; //Number of events
-  const double lambda = 8.0; //rate of arrival
-  const double phi = 0.2; //probability of arrival to link 1
-  const double mu1 = 5.0;
-  const double mu2 = 5.0;
-  const int buff1 = 5;
-  const int buff2 = 20;
-
-  //  cout.precision(4);
-
-  vector<float> time(n);
-<<<<<<< HEAD
-  //  vector<int> link(n); //0 = link 1, 1 = link 2
-
-  unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-  default_random_engine generator(seed);
-  poisson_distribution<int> distribution(1000*(1/lambda));
-  //uniform_distribution<int> linkDistribution(.2);
-
-  for (int i=0; i<n; i++) {
-    time[i] = distribution(generator);
-    time[i] = time[i]/1000;   
-  }
-  /*
-  for (int i=0; i<n; i++) {
-    link[i] = 1;//linkDistribution(linkGenerator);
-  }
-
-  /*for (int i=0; i<n; i++) {
-     cout << "Arrival time: " << time[i] << endl;
-     cout << "Link used: " << link[i] << endl;
-     }*/
-=======
-  vector<int> link(n);
-  vector<float> service(n);
-
-  vector<float> arrivalEventList(n);
-  vector<float> departureEventList(n);
-
-  float startTime;
-  float interarrivalTime;
-  double serviceTime;
-
-  int count1 = 0;
-  int count2 = 0;
-
-  unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-  default_random_engine generator(seed);
- 
-  poisson_distribution<int> arrivalDistribution(1000*(1/lambda));
-  binomial_distribution<int> linkDistribution(1,phi);
-  exponential_distribution<double> serviceLink1Distribution(mu1);
-  exponential_distribution<double> serviceLink2Distribution(mu2);
+	/*---------- Start variable instantiation ----------*/
+	avgDelay[0] = 0.0;
+	avgDelay[1] = 0.0;
+	avgThroughput[0] = 0.0;
+	avgThroughput[1] = 0.0;
+	linkThroughput[0] = 0;
+	linkThroughput[1] = 0;
+	packetCount[0] = 0;
+	packetCount[1] = 0;
+	buffer[0] = 20;
+	buffer[1] = 20;
+	/*---------- End variable instantiation ----------*/
+	
+	//Generate first arrival time  
+  	getArrivalTime(0);
+	
+	//Determine link for first arrival time
+	getLink(0);
   
-  time[0] = arrivalDistribution(generator);
-  time[0] = time[0]/1000;
-  interarrivalTime = 0;
-  startTime = time[0] + interarrivalTime;
-  link[0] = 1;//linkDistribution(1,phi) + 1;
-  
-  if (link[0] == 1) {
-    serviceTime = serviceLink1Distribution(generator);
-  }
-  if (link[0] == 2) {
-    serviceTime = serviceLink2Distribution(generator);
-  }
+  	//Depending on the link, generate a service time for
+	//the respective mu
+	getServiceTime(0);
 
-  arrivalEventList[0] = startTime;
-  departureEventList[0] = startTime + serviceTime;
+	//Add the initial packet to the departureEventList	
+	getDepartureTime(0);
 
-  cout << "Packet\tArrival Time\tService Time\tDeparture Time\tLink" << endl;
-  cout << 1 << "\t" << arrivalEventList[0] << "\t\t" << serviceTime << "\t\t" << departureEventList[0] << "\t\t" << link[0] << endl;
+	//Print the headers for the columns
+	printHeaders();
 
-  for (int i=1; i<n; i++) {
+	for (int i=1; i<n; i++) {
+		
+		//Generate interarrival time
+		getArrivalTime(i);
+		
+		//Determine link for incoming packet
+		getLink(i);
+		
+		//Depending on the link, generate a service time for
+		//the respective mu
+		getServiceTime(i);
+		
+		//Add the packet to the departureEventList
+		getDepartureTime(i);
+		
+		//Print the data for the packet
+		printData(i);
+	}
+	
+	//Run the diagnostics
+	diagnostics();
 
-    time[i] = arrivalDistribution(generator);
-    time[i] = time[i]/1000;
-    interarrivalTime = time[i];
-    startTime = startTime + interarrivalTime;
->>>>>>> 6a3d9c95c2a9a513e1d05ea72aa55a8d3cf831b5
+	//Print the diagnostics
+	printDiagnostics();
+	
+	return 0;
+}
 
-    link[i] = 1;//linkDistribution(generator)+1;
-    
-   if (link[i] == 1) {
-      serviceTime = serviceLink1Distribution(generator);
-   }
-   if (link[i] == 2) {
-      serviceTime = serviceLink2Distribution(generator);
-    }
-    
-   arrivalEventList[i] = startTime;
-   //   departureEventList[i] = arrivalEventList[i] + serviceTime;
-    
-      //Is the new packet arriving before the previous packet has left service?
-   if (arrivalEventList[i] <= departureEventList[i-1] ) {
-     count1 = 0;
-     for (int j = i; 0 < j; j--) {
-       if (arrivalEventList[i] <= departureEventList[j-1]) {
-	 count1++;
-       }
-       if (count1 > buff1) {
-	 departureEventList[i] = -1;
-       }
-       else {
-	 departureEventList[i] = departureEventList[i-1] + serviceTime;
-       }
-     }
-   }
-    
-   //Is the new packet arriving after the previous packet has left service?
-   if((arrivalEventList[i] > departureEventList[i-1]) && (departureEventList[i-1]!=0) ) {
-     departureEventList[i] = arrivalEventList[i] + serviceTime;
-   }
-   
-   cout << i+1 << "\t" << arrivalEventList[i] << "\t\t" << serviceTime << "\t\t";
-   if (departureEventList[i] == -1) {
-     cout << "drop";
-   }
-   else {
-     cout << departureEventList[i];
-   }
+void printHeaders() {
+	//Formatting the headers for the columns
+	cout << left << setw(15) << "Packet" <<
+		setw(20) << "Arrival Time" <<
+			setw(10) << "Link" << 
+				setw(20) << "Service Time" << 
+					setw(20) << "Departure Time" <<
+						setw(10) << "Queue 1" <<
+							setw(10) << "Queue 2" << endl;
+	cout << left << setw(15) << 1 <<
+		setw(20) << arrivalEventList[0] <<
+			setw(10) << link[0]+1 <<
+				setw(20) << serviceTime <<
+					setw(20) << departureEventList[link[0]][0] <<
+						setw(10) << 0 <<
+							setw(10) << 0 << endl;
+}
 
-   cout << "\t\t" << link[i] << "\t";
+void getArrivalTime(int x) {
+	
+	if (x == 0) {
+		//Generate first arrival time
+		times[x] = arrivalDistribution(generator);
+		startTime = times[x];
+	}
+	else {
+		//Generate interarrival time
+		times[x] = arrivalDistribution(generator);
+		interarrivalTime = times[x];
+		startTime = startTime + interarrivalTime;
+	}
+ 	
+	//Add the packet to the arrivalEventList
+	arrivalEventList[x] = startTime;
+}
 
-   /* if (count1 >  buff1) {
-     cout << "drop" << endl;
-     }*/
-   // else {
-     cout << count1 << endl;
-     // }
-  }
-  return 0;
+void getLink(int x) {
+	link[x] = linkDistribution(generator);
+}
+
+void getServiceTime(int x) {
+	if (link[x] == 0) {
+		serviceTime = serviceLink1Distribution(generator);
+	}
+	if (link[x] == 1) {
+		serviceTime = serviceLink2Distribution(generator);
+	}
+}
+
+void getDepartureTime(int x) {
+	if (x == 0) {	
+	departureEventList[link[x]][x] = startTime + serviceTime;
+	}
+	else {
+		int i = x;
+		packetCount[link[i]] = 0;
+		for (int j = 0; j < i; j++) {
+			if (packetCount[link[i]]>=buffer[link[i]]) {
+				departureEventList[link[i]][i] = -1;
+			}
+			if (departureEventList[link[i]][i-1]==-1 && departureEventList[link[i]][i]!=-1) {
+				if (departureEventList[link[i]][j]!=-1) {
+					departureEventList[link[i]][i] = departureEventList[link[i]][j] + serviceTime;
+				}
+				if (arrivalEventList[i] < departureEventList[link[i]][i-j-1]) {
+					packetCount[link[i]]++;
+				}
+			}
+			else if ((packetCount[link[i]] < buffer[link[i]])) {
+				if (arrivalEventList[i] < departureEventList[link[i]][i-j-1]) {
+					packetCount[link[i]]++;
+					departureEventList[link[i]][i] = departureEventList[link[i]][i-1] + serviceTime;
+				}
+				if (arrivalEventList[i] >= departureEventList[link[i]][i-1]) {
+					departureEventList[link[i]][i] = arrivalEventList[i] + serviceTime;
+					continue;
+				}
+				else if ((arrivalEventList[i] >= departureEventList[link[i]][j])) {
+					departureEventList[link[i]][i] = departureEventList[link[i]][i-1] + serviceTime;
+				}
+			}
+			
+		}
+	}
+}
+
+void printData(int x) {
+	int i = x;
+	cout << left << setw(15) << i+1 <<
+		setw(20) << arrivalEventList[i] <<
+			setw(10) << link[i]+1;
+				
+
+	if (departureEventList[link[i]][i] == -1) {
+		cout << left << setw(20) << "drop" <<
+			setw(20) << "drop";
+		if(i >= 500) {
+			totalDroppedPackets++;
+		}
+	}
+	else {
+		cout << left << setw(20) << serviceTime << 
+			setw(20) << departureEventList[link[i]][i];
+		
+		if(i >= 500) {
+				linkThroughput[link[i]]++;
+				if (departureEventList[link[i]][i] > arrivalEventList[i]) {
+					avgDelay[link[i]] += (departureEventList[link[i]][i] - arrivalEventList[i]);
+				}
+				if (i == 500) {
+					diagnosticStartTime = arrivalEventList[i];
+				}
+		}
+	}
+
+	cout << left << setw(10) << packetCount[0] <<
+		setw(10) <<  packetCount[1] << endl;
+}
+
+void diagnostics() {
+	totalServicedPackets = n-500-totalDroppedPackets;
+	blockingProbability = double(totalDroppedPackets)/(n-500);
+	
+	if (phi == 0.0) {
+		avgThroughput[1] = double(linkThroughput[1])/(arrivalEventList[n-1]-diagnosticStartTime);
+		avgSystemThroughput = avgThroughput[1];
+	}
+	else if (phi == 1.0) {
+		avgThroughput[0] = double(linkThroughput[0])/(arrivalEventList[n-1]-diagnosticStartTime);
+		avgSystemThroughput = avgThroughput[0];
+	}
+	else {
+		avgThroughput[0] = double(linkThroughput[0])/(arrivalEventList[n-1]-diagnosticStartTime);
+		avgThroughput[1] = double(linkThroughput[1])/(arrivalEventList[n-1]-diagnosticStartTime);
+		avgSystemThroughput = avgThroughput[0]+avgThroughput[1];
+	}
+	
+	
+	if (linkThroughput[0] > 0) {
+		avgDelay[0] = avgDelay[0]/linkThroughput[0];		
+	}
+
+	if (linkThroughput[1] > 0) {
+		avgDelay[1] = avgDelay[1]/linkThroughput[1];		
+	}
+}
+
+void printDiagnostics() {
+	cout << "Total serviced packets: " << totalServicedPackets << endl;
+	cout << "Total dropped packets: " << totalDroppedPackets << endl;
+	cout << "Bocking probability: " << blockingProbability << " = " << blockingProbability*100 << "%" << endl;
+	cout << "Average system throughput (pkts/sec): " << avgSystemThroughput << endl;
+	cout << "Average number of packets in the system: " << lambda*(1-blockingProbability)*(avgDelay[0] + avgDelay[1]) << endl;
+	cout << endl;
+	cout << "Link 1 throughput: " << linkThroughput[0] << endl;
+	cout << "Link 1 average throughput (pkts/sec): " << avgThroughput[0] << endl;
+	cout << "Link 1 average delay (sec): " << avgDelay[0] << endl;
+	cout << endl;
+	cout << "Link 2 throughput: " << linkThroughput[1] << endl;
+	cout << "Link 2 average throughput (pkts/sec): " << avgThroughput[1] << endl;
+	cout << "Link 2 average delay (sec): " << avgDelay[1] << endl;
+	cout << endl;
 }
