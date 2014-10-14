@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
  if (myfile.is_open()) {
     while (getline(myfile,line)) {
       //      if (cin.get()) {
-	bytes += line.size() + 1;
+	bytes += line.size();
 	//}
     }
     myfile.close();
