@@ -1,9 +1,14 @@
-int result;
+#include <iostream>
+
+using namespace std;
 
 int fact(int val) {
-
-  if (val > 0) {
-    result = val*fact(val-1)
+  int temp;
+  if (val <= 1) {
+    return 1;
   }
-  return result;
+  else {
+    temp = val*fact(val-1);
+    return temp;
+  }
 }

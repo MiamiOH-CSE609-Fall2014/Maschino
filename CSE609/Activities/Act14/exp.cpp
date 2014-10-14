@@ -1,3 +1,5 @@
+#include <math.h>
+
 
 int exp(int base, int exponent) {
 
