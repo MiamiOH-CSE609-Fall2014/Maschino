@@ -59,24 +59,36 @@ int main() {
 
 void welcome() {
 	cout << "\nWelcome to ClassCurv2.0" << endl;
+	cout << "\nTo end this application, type 'none'";
+	cout << "\nwhen prompted for a student name." << endl;
 }
 
 void getInput(int i) {
-	cout << "\nWould you like to add a student to ";
+	/*cout << "\nWould you like to add a student to ";
 	cout << "the grade distribution? (y/n) " << endl;
-
+	*/
+	cout << "\nStudent's name: ";
+	
 	string input;
 	try {
 		getline(cin, input);
-		if (input=="y") {
-			section.push_back(student());
-			setStudentName(i);
-			setStudentGrade(i);
-			getInput(i+1);
+		if (input!="none") {
+			if (input.length()<2 || atof(input.c_str())!=0.0) {
+				throw invalid_argument("Please enter a valid name.");
+			}
+			else {
+				
+				section.push_back(student());
+				section[i].name = input;
+				//setStudentName(i);
+				setStudentGrade(i);
+				getInput(i+1);
+
+			}
 		}
-		else if (input!="n") {
-			throw invalid_argument("Sorry! You need to enter either 'y' or 'n'");
-		}
+//		else if (input!="n") {
+//			throw invalid_argument("Sorry! You need to enter either 'y' or 'n'");
+//		}
 	}
 	catch (invalid_argument e) {
 		cout << e.what() << endl;
@@ -86,22 +98,25 @@ void getInput(int i) {
 }
 
 void setStudentName(int i) {
-	cout << "\nStudent's name: ";
+	//section[i].name = input;
 	
-	string input;
-	try {
-		getline(cin, input);
-		if (input.length()<2 || atof(input.c_str())!=0.0) {
-			throw invalid_argument("Please enter a valid name.");
-		}
-		else {
-			section[i].name = input;
-		}
-	}
-	catch (invalid_argument e) {
-		cout << e.what() << endl;
-		setStudentName(i);
-	}	
+	// string input;
+	// try {
+	// 	getline(cin, input);
+	// 	if (input.length()<2 || atof(input.c_str())!=0.0) {
+	// 		throw invalid_argument("Please enter a valid name.");
+	// 	}
+	// 	else if (input!="none") {
+	// 		section[i].name = input;
+	// 	}
+	// 	else {
+	//
+	// 	}
+	// }
+	// catch (invalid_argument e) {
+	// 	cout << e.what() << endl;
+	// 	setStudentName(i);
+	// }	
 }
 
 void setStudentGrade(int i) {
