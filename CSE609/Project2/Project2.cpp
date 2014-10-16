@@ -4,6 +4,8 @@
 #include <exception>
 #include <iomanip>
 #include <math.h>
+#include <stdexcept>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -76,7 +78,7 @@ void getInput(int i) {
 			throw invalid_argument("Sorry! You need to enter either 'y' or 'n'");
 		}
 	}
-	catch (exception e) {
+	catch (invalid_argument e) {
 		cout << e.what() << endl;
 		getInput(i);
 	}	
@@ -90,32 +92,32 @@ void setStudentName(int i) {
 	try {
 		getline(cin, input);
 		if (input.length()<2 || atof(input.c_str())!=0.0) {
-			throw invalid_argument("Please enter a name.");
+			throw invalid_argument("Please enter a valid name.");
 		}
 		else {
 			section[i].name = input;
 		}
 	}
-	catch (exception e) {
+	catch (invalid_argument e) {
 		cout << e.what() << endl;
 		setStudentName(i);
 	}	
 }
 
 void setStudentGrade(int i) {
-	cout << "Student's grade: ";
+	cout << "\nStudent's grade: ";
 
 	string input;
 	try {
 		getline(cin,input);
-		if (atof(input.c_str())<=0.0 || atof(input.c_str())>100) {
-			throw invalid_argument("Please enter a value.");
+		if (atof(input.c_str())<0.0 || atof(input.c_str())>100) {
+			throw invalid_argument("Please enter a value between 0 and 100.");
 		}
 		else {
 			section[i].grade = atof(input.c_str());
 		}
 	}
-	catch (exception e) {
+	catch (invalid_argument e) {
 		cout << e.what() << endl;
 		setStudentGrade(i);
 	}
@@ -172,12 +174,12 @@ void printScale() {
 }
 
 void printStudents() {
-	cout << setw(20) << "\nName" << setw(25) << "Score" << setw(20) << "Grade" << endl;
+	cout << setw(30) << "\nName" << setw(30) << "Score" << setw(25) << "Grade" << endl;
 	cout << endl;
 	
 	for (int i = 0; i < section.size(); i++) {
-		cout << left << (i+1) << ".  " << setw(20) << section[i].name;
-		cout << left << section[i].grade << setw(20) << '%';
+	  cout << left << setw(2) << (i+1) << ".  " << setw(25) << section[i].name;
+		cout << left << section[i].grade << setw(25) << '%';
 		cout << left << setw(20) << section[i].letter << endl;
 		cout << endl;
 	}
