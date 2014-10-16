@@ -157,6 +157,13 @@ void getScale() {
 	C_Scale = (-0.5*stdDev)+mean;
 	D_Scale = (-1.5*stdDev)+mean;
 	
+	// if (A_Scale > 100) {
+// 	  A_Scale = 100;
+// 	}
+// 	if (A_Scale < 0) {
+// 	  A_Scale = 0;
+// 	}
+	
 }
 
 void getLetter() {
@@ -181,11 +188,25 @@ void getLetter() {
 
 void printScale() {
 	cout << "\nGrading Scale" << endl;
-	cout << "\nA" << "\tabove " << setprecision(3) << A_Scale << "%" << endl;
+	if (A_Scale > 100) {
+		cout << "\nA" << "\tabove " << setprecision(3) << "100" << "%" << endl;
+	}
+	else {
+		cout << "\nA" << "\tabove " << setprecision(3) << A_Scale << "%" << endl;
+	}
+	
 	cout << "\nB" << "\t" << setprecision(3) << B_Scale << "% - " << A_Scale << "%" << endl;
+	
 	cout << "\nC" << "\t" << setprecision(3) << C_Scale << "% - " << B_Scale << "%" << endl;
+	
 	cout << "\nD" << "\t" << setprecision(3) << D_Scale << "% - " << C_Scale << "%" << endl;
-	cout << "\nF" << "\tbelow " << setprecision(3) << D_Scale << "%" << endl;
+	
+	if (D_Scale < 0) {
+		cout << "\nF" << "\tbelow " << setprecision(3) << "0" << "%" << endl;
+	}
+	else {
+		cout << "\nF" << "\tbelow " << setprecision(3) << D_Scale << "%" << endl;
+	}
 }
 
 void printStudents() {
