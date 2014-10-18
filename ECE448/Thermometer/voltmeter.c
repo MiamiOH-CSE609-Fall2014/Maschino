@@ -17,9 +17,11 @@
 * If you want four digits of accuracy, need to measure your AVCC well.
 * Measure either AVCC of the voltage on AREF and enter it here.
 */
-#define REF_VCC 1.1
+#define REF_VCC 3.3
 /* measured division by voltage divider */
 #define VOLTAGE_DIV_FACTOR  1
+
+#define VOLTAGE_DIV_RES 10000
 
 
 // -------- Functions --------- //
@@ -45,18 +47,75 @@ uint16_t oversample16x(void) {
 		sleep_mode();                   /* chip to sleep, takes ADC sample */
 		oversampledValue += ADC;                        /* add them up 16x */
 	}
-	return (oversampledValue >> 3);          /* divide back down by four */
+	return (oversampledValue >> 2);          /* divide back down by four */
 }
 
-void printFloat(float number) {
-	number = round(number * 100) / 100; /* round off to 2 decimal places */
-	transmitByte('0' + number / 10);                       /* tens place */
-	transmitByte('0' + number - 10 * floor(number / 10));        /* ones */
+void printFloat(float voltage) {
+	float number = voltage/4;
+	//transmitByte('0' + floor(10*((number/100000)-floor(number/100000))));
+	transmitByte('0' + floor(10*((number/10000)-floor(number/10000))));
+	transmitByte('0' + floor(10*((number/1000)-floor(number/1000))));
+	transmitByte('0' + floor(10*((number/100)-floor(number/100))));
+	transmitByte('0' + ((number/10) - floor(number/10))*10);
 	transmitByte('.');
-	transmitByte('0' + (number * 10) - floor(number) * 10);    /* tenths */
-	/* hundredths place */
-	transmitByte('0' + (number * 100) - floor(number * 10) * 10);
+	transmitByte('0' + floor(10*((number-floor(number)))));
 	printString("\r\n");
+}
+
+void printVoltage(float voltage) {
+	float number = (voltage/4) * (REF_VCC/1023);
+	transmitByte('0' + ((number/10) - floor(number/10))*10);
+	transmitByte('.');
+	transmitByte('0' + floor(10*((number-floor(number)))));
+	transmitByte('0' + floor(10*(((number*10)-floor(number*10)))));
+	transmitByte('0' + floor(10*(((number*100)-floor(number*100)))));
+	transmitByte('0' + floor(10*(((number*1000)-floor(number*1000)))));
+	printString("\r\n");
+}
+
+float printThermRes(float voltage) {
+	voltage = (voltage/4) * (REF_VCC/1023);
+	float R_T = (REF_VCC/voltage)*(VOLTAGE_DIV_RES-((voltage*VOLTAGE_DIV_RES)/REF_VCC));
+	float number = R_T;
+	transmitByte('0' + floor(10*((number/100000)-floor(number/100000))));
+	transmitByte('0' + floor(10*((number/10000)-floor(number/10000))));
+	transmitByte('0' + floor(10*((number/1000)-floor(number/1000))));
+	transmitByte('0' + floor(10*((number/100)-floor(number/100))));
+	transmitByte('0' + ((number/10) - floor(number/10))*10);
+	transmitByte('.');
+	transmitByte('0' + floor(10*((number-floor(number)))));
+	printString("\r\n");
+	return R_T;
+}
+
+void printTemp(float R_T) {
+	float T_0 = 298.15;
+	float B = 3977;
+	float R_0 = 10000;
+	float temp = 1/(1/T_0 + (1/B)*log(R_T/R_0));
+	
+	temp = temp - 273.15;
+	float number = temp;
+	
+	//Celsius
+	transmitByte('0' + floor(10*((number/100)-floor(number/100))));
+	transmitByte('0' + ((number/10) - floor(number/10))*10);
+	transmitByte('.');
+	transmitByte('0' + floor(10*((number-floor(number)))));
+	transmitByte('0' + floor(10*(((number*10)-floor(number*10)))));
+	transmitByte('0' + floor(10*(((number*100)-floor(number*100)))));
+	printString(" C\r\n");
+	
+	number = (1.8*temp + 32);
+	//Fahrenheit
+	transmitByte('0' + floor(10*((number/100)-floor(number/100))));
+	transmitByte('0' + ((number/10) - floor(number/10))*10);
+	transmitByte('.');
+	transmitByte('0' + floor(10*((number-floor(number)))));
+	transmitByte('0' + floor(10*(((number*10)-floor(number*10)))));
+	transmitByte('0' + floor(10*(((number*100)-floor(number*100)))));
+	printString(" F\r\n");
+	
 }
 
 int ADCsingleREAD(uint8_t adctouse)
@@ -92,50 +151,20 @@ int main(void) {
 	setupADCSleepmode();
 
 	// ------ Event loop ------ //
-	int ADCvalue;
   
 	while (1) {
 
-		voltage = oversample16x() * VOLTAGE_DIV_FACTOR * REF_VCC / 1024;
-		//printFloat(voltage);
-		/*  alternatively, just print it out:
-		*  printWord(voltage*100);
-		*  but then you have to remember the decimal place
-		*/
+		voltage = oversample16x();
    
-		//ADCvalue = ADCsingleREAD(1);
-		// ADCvalue now contains an 10bit ADC read
-		//printFloat(ADCvalue);
-		
-		//uint8_t number = (ADCvalue * REF_VCC * 10) / 1024;
-		float number = voltage;
-		
-		number = round(number * 100) / 100; /* round off to 2 decimal places */
-		transmitByte('0' + number / 10);
-		transmitByte('0' + number - 10 * floor(number / 10));
-		transmitByte('.');
-		transmitByte('0' + (number * 10) - floor(number) * 10);
-		transmitByte('0' + (number * 100) - floor(number * 10) * 10);
+		printFloat(voltage);
+		printVoltage(voltage);
+		float res = printThermRes(voltage);
+		printTemp(res);
 		printString("\r\n");
 
-		_delay_ms(500);
+		_delay_ms(2000);
 
 
 	}                                                  /* End event loop */
 	return (0);                            /* This line is never reached */
 }
-
-
-
-    
-
-// int main(void)
-// {
-//     int ADCvalue;
-//
-//     while (1)
-//     {
-//             ADCvalue = ADCsingleREAD(1);
-//             // ADCvalue now contains an 10bit ADC read
-//     }
-// }
