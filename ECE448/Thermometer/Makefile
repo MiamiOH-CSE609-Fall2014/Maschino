@@ -14,11 +14,11 @@ MAIN = voltmeter.c
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
-LOCAL_SOURCE = 
+LOCAL_SOURCE =
 
 ## Here you can link to one more directory (and multiple .c files)
 EXTRA_SOURCE_DIR = Library/
-EXTRA_SOURCE_FILES = USART.c
+EXTRA_SOURCE_FILES = USART.c i2c.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########

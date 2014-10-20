@@ -6,52 +6,20 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
 #include <avr/sleep.h>                           /* for ADC sleep mode */
 #include <math.h>                           /* for round() and floor() */
 #include <stdio.h>
 
 #include "pinDefines.h"
 #include "USART.h"
+#include "i2c.h"
 
-/* Note: This voltmeter is only as accurate as your reference voltage.
-* If you want four digits of accuracy, need to measure your AVCC well.
-* Measure either AVCC of the voltage on AREF and enter it here.
-*/
-#define REF_VCC 3.3
-/* measured division by voltage divider */
-#define VOLTAGE_DIV_FACTOR  1
-
-#define VOLTAGE_DIV_RES 10000
-
-
-// -------- Functions --------- //
-void initADC(void) {
-	ADMUX |= (0b00001111 & PC3);                      /* set mux to ADC5 */
-	ADMUX |= (1 << REFS0);                  /* reference voltage on AVCC */
-	ADCSRA |= (1 << ADPS1) | (1 << ADPS2);    /* ADC clock prescaler /64 */
-	ADCSRA |= (1 << ADEN);                                 /* enable ADC */
-}
-
-void setupADCSleepmode(void) {
-	set_sleep_mode(SLEEP_MODE_ADC);            /* defined in avr/sleep.h */
-	ADCSRA |= (1 << ADIE);                       /* enable ADC interrupt */
-	sei();                                   /* enable global interrupts */
-}
-
-EMPTY_INTERRUPT(ADC_vect);
-
-uint16_t oversample16x(void) {
-	uint16_t oversampledValue = 0;
-	uint8_t i;
-	for (i = 0; i < 16; i++) {
-		sleep_mode();                   /* chip to sleep, takes ADC sample */
-		oversampledValue += ADC;                        /* add them up 16x */
-	}
-	return (oversampledValue >> 2);          /* divide back down by four */
-}
+#define ADDRESS_W		0b00111001
+#define ADDRESS_R		0b00111000
 
 void printFloat(float voltage) {
-	float number = voltage/4;
+	float number = voltage;
 	//transmitByte('0' + floor(10*((number/100000)-floor(number/100000))));
 	transmitByte('0' + floor(10*((number/10000)-floor(number/10000))));
 	transmitByte('0' + floor(10*((number/1000)-floor(number/1000))));
@@ -118,52 +86,35 @@ void printTemp(float R_T) {
 	
 }
 
-// int ADCsingleREAD(uint8_t adctouse)
-// {
-// 	int ADCval;
-//
-// 	ADMUX = adctouse;         // use #1 ADC
-// 	ADMUX |= (1 << REFS0);    // use AVcc as the reference
-// 	ADMUX &= ~(1 << ADLAR);   // clear for 10 bit resolution
-//
-// 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);    // 128 prescale for 8Mhz
-// 	ADCSRA |= (1 << ADEN);    // Enable the ADC
-//
-// 	ADCSRA |= (1 << ADSC);    // Start the ADC conversion
-//
-// 	while(ADCSRA & (1 << ADSC));      // Thanks T, this line waits for the ADC to finish
-//
-//
-// 	ADCval = ADCL;
-// 	ADCval = (ADCH << 8) + ADCval;    // ADCH is read so ADC can be updated again
-//
-// 	return ADCval;
-// }
-
 int main(void) {
 
-	float voltage;
+	uint8_t tempHighByte, tempLowByte;
 
 	// -------- Inits --------- //
+	//clock_prescale_set(clock_div_1); 
 	initUSART();
-	printString("\r\nDigital Voltmeter\r\n\r\n");
-	initADC();
-	setupADCSleepmode();
-
+	printString("\r\n====  i2c Accelerometer  ====\r\n");
+	initI2C();
+	
 	// ------ Event loop ------ //
-  
 	while (1) {
 
-		voltage = oversample16x();
-   
-		printFloat(voltage);
-		printVoltage(voltage);
-		float res = printThermRes(voltage);
-		printTemp(res);
-		printString("\r\n");
+		i2cStart();
+		i2cSend(ADDRESS_W);
+		i2cSend(0b00000000);
+		i2cStart();
+		/* restart, just send start again */
+		/* Setup and send address, with read bit */
+		i2cSend(ADDRESS_R);
+		/* Now receive two bytes of temperature */
+		tempHighByte = i2cReadAck();
+		tempLowByte = i2cReadNoAck();
+		i2cStop();
 
-		_delay_ms(2000);
+		// Print it out nicely over serial for now...
+		printFloat(tempHighByte);
 
+		_delay_ms(1000);
 
 	}                                                  /* End event loop */
 	return (0);                            /* This line is never reached */
