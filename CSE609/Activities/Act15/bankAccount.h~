@@ -1,0 +1,19 @@
+#include <iostream>
+#include <string>
+#include <exception>
+
+using namespace std;
+                 
+class bankAccount {
+ private:
+  string name;
+  int accountNumber;
+  float accountBalance;
+ public:
+  void setName(string name);
+  float getBalance(); 
+  void getAccountNumber();
+
+  void deposit(float amount);
+  void withdraw(float amount);
+};
