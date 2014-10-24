@@ -17,9 +17,7 @@
 * If you want four digits of accuracy, need to measure your AVCC well.
 * Measure either AVCC of the voltage on AREF and enter it here.
 */
-#define REF_VCC 3.3
-/* measured division by voltage divider */
-#define VOLTAGE_DIV_FACTOR  1
+#define REF_VCC 1.1
 
 #define VOLTAGE_DIV_RES 10000
 
@@ -27,7 +25,7 @@
 // -------- Functions --------- //
 void initADC(void) {
 	ADMUX |= (0b00001111 & PC3);                      /* set mux to ADC5 */
-	ADMUX |= (1 << REFS0);                  /* reference voltage on AVCC */
+	ADMUX |= (1 << REFS1) | (1 << REFS0);                  /* set reference voltage to internal 1.1v */
 	ADCSRA |= (1 << ADPS1) | (1 << ADPS2);    /* ADC clock prescaler /64 */
 	ADCSRA |= (1 << ADEN);                                 /* enable ADC */
 }
@@ -117,28 +115,6 @@ void printTemp(float R_T) {
 	printString(" F\r\n");
 	
 }
-
-// int ADCsingleREAD(uint8_t adctouse)
-// {
-// 	int ADCval;
-//
-// 	ADMUX = adctouse;         // use #1 ADC
-// 	ADMUX |= (1 << REFS0);    // use AVcc as the reference
-// 	ADMUX &= ~(1 << ADLAR);   // clear for 10 bit resolution
-//
-// 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);    // 128 prescale for 8Mhz
-// 	ADCSRA |= (1 << ADEN);    // Enable the ADC
-//
-// 	ADCSRA |= (1 << ADSC);    // Start the ADC conversion
-//
-// 	while(ADCSRA & (1 << ADSC));      // Thanks T, this line waits for the ADC to finish
-//
-//
-// 	ADCval = ADCL;
-// 	ADCval = (ADCH << 8) + ADCval;    // ADCH is read so ADC can be updated again
-//
-// 	return ADCval;
-// }
 
 int main(void) {
 
