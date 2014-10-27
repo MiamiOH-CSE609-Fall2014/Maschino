@@ -1,0 +1,2 @@
+
+int linearSearch(vector<string>, string);

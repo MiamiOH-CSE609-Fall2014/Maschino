@@ -1,0 +1,6 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int binarySearch(const vector<int> &numbers, string key);

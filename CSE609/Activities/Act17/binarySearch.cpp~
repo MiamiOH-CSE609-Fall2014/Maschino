@@ -1,0 +1,28 @@
+#include <iostream>
+#include <vector>
+#include "binarySearch.h"
+
+using namespace std;
+
+int binarySearch(const vector< int> &numbers, string key) {
+
+  int iteration = 0, left = 0, right = numbers.size()-1, mid;
+
+  while (left <= right) {
+    iteration++;
+    mid = (int) ((left + right) / 2);
+    if (key == numbers[mid]) {
+      cout << "Binary search found " << numbers[mid] << " after " << iteration << " iterations.\n";
+      iteration++;
+      return mid;
+    }
+    else if (key > numbers[mid])
+      left = mid + 1;
+    else
+      right = mid - 1;
+  }
+  cout << "Binary search did not found " << numbers[mid] << " after " << iteration << " iterations.\n";
+
+  return -1;
+
+}
