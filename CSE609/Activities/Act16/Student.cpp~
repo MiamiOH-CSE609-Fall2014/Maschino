@@ -1,0 +1,24 @@
+#include "Student.h"
+#include <string>
+
+using namespace std;
+
+Student::Student() {
+  name = "";
+  score1 = 0.0;
+  score2 = 0.0;
+  score3 = 0.0;
+  average = (score1+score2+score3)/3;
+}
+
+Student::Student(string name, float score1, float score2, float score3) {
+  // name = name;
+}
+
+string getName() {
+  return name;
+}
+
+float computerAverage() {
+  return average;
+}
