@@ -23,8 +23,16 @@
 
 
 // -------- Functions --------- //
-void initADC(void) {
-	ADMUX |= (0b00001111 & PC3);                      /* set mux to ADC5 */
+void initADC(int n) {
+	switch(n) {
+		case 0x0:
+			ADMUX = 0b00000011;                     /* set mux to ADC3 */
+			break;
+		case 0x1:
+			ADMUX = 0b00000010;                      /* set mux to ADC2 */
+			break;
+	}
+	//ADMUX |= (0b00001111 & PC3);                      /* set mux to ADC5 */
 	ADMUX |= (1 << REFS1) | (1 << REFS0);                  /* set reference voltage to internal 1.1v */
 	ADCSRA |= (1 << ADPS1) | (1 << ADPS2);    /* ADC clock prescaler /64 */
 	ADCSRA |= (1 << ADEN);                                 /* enable ADC */
@@ -118,29 +126,41 @@ void printTemp(float R_T) {
 
 int main(void) {
 
-	float voltage;
-
+	float voltage1;
+	float voltage2;
+	float res1;
+	float res2;
 	// -------- Inits --------- //
 	initUSART();
-	printString("\r\nDigital Voltmeter\r\n\r\n");
-	initADC();
 	setupADCSleepmode();
+	printString("\r\nDigital Voltmeter\r\n\r\n");
+	
 
 	// ------ Event loop ------ //
   
 	while (1) {
 
-		voltage = oversample16x();
-   
-		printFloat(voltage);
-		printVoltage(voltage);
-		float res = printThermRes(voltage);
-		printTemp(res);
+		initADC(0);
+		voltage1 = oversample16x();
+		printString("Thermistor 1:\r\n");
+		printFloat(voltage1);
+		//printVoltage(voltage1);
+		//res1 = printThermRes(voltage1);
+		//printTemp(res1);
 		printString("\r\n");
+		
+		_delay_ms(100);
 
-		_delay_ms(2000);
-
-
+		initADC(1);
+		voltage2 = oversample16x();
+		printString("Thermistor 2:\r\n");
+		printFloat(voltage2);
+		//printVoltage(voltage2);
+		//res2 = printThermRes(voltage2);
+		//printTemp(res2);
+		printString("\r\n");
+		_delay_ms(500);
+		
 	}                                                  /* End event loop */
 	return (0);                            /* This line is never reached */
 }
