@@ -1,8 +1,10 @@
 #include "Wavelength.h"
+#include <iostream>
 
 Wavelength::Wavelength() {
 	for (int i = 0; i < 9; i++) {
 		fiber[i] = 0;
+		endTime[i] = 0.0;
 	}
 }
 
@@ -10,25 +12,23 @@ int Wavelength::getFiber(int l) {
 	return fiber[l];
 }
 
-void Wavelength::setFiber(int l, int flag) {
-	fiber[l] = flag;
+void Wavelength::setPath(int node1, int node2, float end) {
+	int minimum = min(node1,node2);
+	int maximum = max(node1,node2);
+	for (int i = minimum; i < maximum; i++) {
+		fiber[i] = 1;
+		endTime[i] = end;
+	}
 }
 
-int Wavelength::checkFiber(int min, int max) {
-	int count = 0;
-	for (int i = min; i < max-1; i++) {
-		if (fiber[i] == 1) {
-			return 1; //return 1 if occupied
-		}
-		else {
-			count++;
+int Wavelength::checkPath(int node1, int node2, float start) {
+	int minimum = min(node1,node2);
+	int maximum = max(node1,node2);
+	int count;
+	for (int i = minimum; i < maximum; i++) {
+		if (endTime[i] > start) {
+			return 1;
 		}
 	}
-	if (count == (max-min)) {
-		for (int i = min; i < max-1; i++) {
-			fiber[i] = 1;
-		}
-		return 0; //return 0 if vacant
-	}
-	return 1;
+	return 0;
 }
