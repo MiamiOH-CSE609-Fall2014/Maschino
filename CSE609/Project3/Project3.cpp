@@ -248,7 +248,7 @@ tuple<int,int,string> findHighScore(string haystack, vector<string> needles, vec
 			
 			}
 			//NOTE: > yields first needle, >= yields second needle
-			if (score >= get<1>(highestScore)) {  
+			if (score > get<1>(highestScore)) {  
 				highestScore = make_tuple(i,score,needles[z]);
 			}
 		
