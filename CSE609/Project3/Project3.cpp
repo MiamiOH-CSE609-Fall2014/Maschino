@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
 	string in;
 	cout << endl;
-	cout << "How many sequences would you like to score?" << endl;
+	cout << "How many sequences would you like to score? ";
 
 	try {
 		cin >> in;
@@ -59,8 +59,7 @@ int main(int argc, char* argv[]) {
 	vector<string> str(atoi(in.c_str()));
 	
 	for (int i = 0; i < str.size(); i++) {
-		cout << endl;
-		cout << "Enter the sequence: ";
+		cout << "Enter the sequence #" << i+1 << " on a single line: " << endl;
 		cin >> in;
 		str[i] = in;
 	}
@@ -70,8 +69,11 @@ int main(int argc, char* argv[]) {
 	tuple<int,int,string> score2 = findHighScore(sequence,str,scoring_m);
 	
 	//cout << "(" << get<0>(score) << ", " << get<1>(score) << ")" << endl;
-	cout << "(" << get<0>(score2) << ", " << get<1>(score2) << ", '" << get<2>(score2) << "')" << endl;
 	
+	cout << "\nSequence:" << endl;
+	cout << get<2>(score2) << endl;
+	cout << "Score: " << get<1>(score2) << " at position " << get<0>(score2) << endl;
+	cout << endl;
 	return 0;
 }
 
@@ -100,14 +102,14 @@ void parseFastaFile(string filepath) {
 		}   
 	}
 	
-	cout << header << endl;
+	// cout << header << endl;
 	for (int i=0; i<comments.size()-1;i++) {
 		comments[i] += "',";
-		cout << comments[i] << endl;
+		// cout << comments[i] << endl;
 	}
 	comments[comments.size()-1] += "'],";
-	cout << comments[comments.size()-1] << endl;
-	cout << "'" << sequence << "')" << endl;
+	// cout << comments[comments.size()-1] << endl;
+	// cout << "'" << sequence << "')" << endl;
 	
 	DNA = make_tuple(header,comments,sequence);
 }
@@ -115,14 +117,26 @@ void parseFastaFile(string filepath) {
 map<string,int> digramFreqScores(string s) {
 	map<string,int> d;
 	
-	cout << "{";
+	cout << "\n\t\tDigram Frequency Matrix" << endl;
+	cout << "\t\tA\tG\tC\tT" << endl;
+	
+	//cout << "{";
 	for (int i = 0; i < symbols.size()-1; i++) {
 		d.insert(pair<string,int>(symbols[i],countDigram(s,symbols[i])));
-		cout << "'" << symbols[i] << "': " << d.find(symbols[i])->second << ", ";
+		if (i==0) {
+			cout << "\t" << symbols[i+1].substr(0,1);
+		}
+		cout << "\t" << d.find(symbols[i])->second;
+		if ((i%4)==3) {
+			cout << endl;
+			cout << "\t" << symbols[i+1].substr(0,1);
+		}
+		//cout << "'" << symbols[i] << "': " << d.find(symbols[i])->second << ", ";
 	}
 	d.insert(pair<string,int>(symbols[symbols.size()-1],\
 		countDigram(s,symbols[symbols.size()-1])));
-	cout << "'" << symbols[symbols.size()-1] << "': " \
+	cout << "\t" << d.find(symbols[symbols.size()-1])->second << endl;
+	//cout << "'" << symbols[symbols.size()-1] << "': " \
 		<< d.find(symbols[symbols.size()-1])->second << "}" << endl;
 	
 	return d;
@@ -151,22 +165,22 @@ vector< vector<int> > digramFreqMatrix(map<string,int> d) {
 			}
 		}
 	}
-		
-	cout << "[";
-	for (int i =0; i < 4; i++) {
-		cout << "[";
-		for (int j = 0; j<4; j++) {
-			cout << m[i][j];
-			if (j!=3) {
-				cout << ", ";
-			}
-		}
-		cout << "]";
-		if (i!=3) {
-			cout << ", ";
-		}
-	}
-	cout << "]" << endl;
+
+	// cout << "[";
+// 	for (int i =0; i < 4; i++) {
+// 		cout << "[";
+// 		for (int j = 0; j<4; j++) {
+// 			cout << m[i][j];
+// 			if (j!=3) {
+// 				cout << ", ";
+// 			}
+// 		}
+// 		cout << "]";
+// 		if (i!=3) {
+// 			cout << ", ";
+// 		}
+// 	}
+// 	cout << "]" << endl;
 	
 	return m;
 }
@@ -186,6 +200,22 @@ vector< vector<int> > parseScoringFile(string filepath) {
 			}
 		}
 	}
+	
+	cout << "\n\t\tScoring Matrix" << endl;
+	cout << "\t\tA\tG\tC\tT" << endl;
+	
+	for (int i = 0; i < symbols.size()-1; i++) {
+		if (i==0) {
+			cout << "\t" << symbols[i+1].substr(0,1);
+		}
+		cout << "\t" << score_matrix[i/4][i%4];
+		if ((i%4)==3) {
+			cout << endl;
+			cout << "\t" << symbols[i+1].substr(0,1);
+		}
+	}
+	cout << "\t" << score_matrix[score_matrix.size()-1][score_matrix.size()-1] << endl;
+	
 	// cout << "[";
 	// 	for (int i =0; i < 4; i++) {
 	// 		cout << "[";
