@@ -1,0 +1,18 @@
+objects = main.o fact.o exp.o
+main = main.cpp exp.h fact.h
+fact = fact.cpp fact.h
+exp = exp.cpp exp.h
+
+CC = g++
+
+act21: $(objects)
+	$(CC) -o act21 main.o fact.o exp.o
+	echo act21: make complete
+
+main.o: $(main)
+	$(CC) -c main.cpp
+
+fact.o: $(fact)
+	$(CC) -c fact.cpp
+exp.o: $(exp)
+	$(CC) -c exp.cpp
