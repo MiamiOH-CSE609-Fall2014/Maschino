@@ -5,20 +5,20 @@
 ##########------------------------------------------------------##########
 
 MCU   = atmega168p
-F_CPU = 8000000
+F_CPU = 1000000
 BAUD = 9600
 ## Also try BAUD = 19200 or 38400 if you're feeling lucky.
 
 ## This is where your main() routine lives 
-MAIN = i2cThermometer.c
+MAIN = voltmeter.c
 
 ## If you've split your program into multiple .c / .h files, 
 ## include the additional source (in same directory) here 
-LOCAL_SOURCE = i2c.c
+LOCAL_SOURCE =
 
 ## Here you can link to one more directory (and multiple .c files)
-EXTRA_SOURCE_DIR = ../../AVR-Programming-Library/
-EXTRA_SOURCE_FILES = USART.c
+EXTRA_SOURCE_DIR = Library/
+EXTRA_SOURCE_FILES = USART.c i2c.c
 
 ##########------------------------------------------------------##########
 ##########                 Programmer Defaults                  ##########

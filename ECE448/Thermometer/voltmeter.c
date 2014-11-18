@@ -145,8 +145,8 @@ int main(void) {
 		printString("Thermistor 1:\r\n");
 		printFloat(voltage1);
 		//printVoltage(voltage1);
-		//res1 = printThermRes(voltage1);
-		//printTemp(res1);
+		res1 = printThermRes(voltage1);
+		printTemp(res1);
 		printString("\r\n");
 		
 		_delay_ms(100);
@@ -156,10 +156,10 @@ int main(void) {
 		printString("Thermistor 2:\r\n");
 		printFloat(voltage2);
 		//printVoltage(voltage2);
-		//res2 = printThermRes(voltage2);
-		//printTemp(res2);
+		res2 = printThermRes(voltage2);
+		printTemp(res2);
 		printString("\r\n");
-		_delay_ms(500);
+		_delay_ms(2500);
 		
 	}                                                  /* End event loop */
 	return (0);                            /* This line is never reached */
