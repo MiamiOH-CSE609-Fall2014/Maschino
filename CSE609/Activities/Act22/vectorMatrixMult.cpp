@@ -1,11 +1,16 @@
 #include <iostream>
 #include <vector>
+#include <gsl/gsl_matrix.h>
+
 
 using namespace std;
 
 int main() {
-    vector<vector<int> > matrix1;
-    vector<vector<int> > matrix2;
+  //    vector<vector<int> > matrix1;
+  //    vector<vector<int> > matrix2;
+ 
+
+
     int row1, col1, row2, col2;
     do {
 	cout << "Dimensions of matrix #1: (row col):";
@@ -33,6 +38,10 @@ int main() {
 	}
     } while ( col1 != row2 );
 
+
+    gsl_matrix * matrix1 = gsl_matrix_alloc(row1,col1);
+    gsl_matrix * matrix2 = gsl_matrix_alloc(row2,col2);
+
     int value;
     vector<int> row;
 
@@ -41,9 +50,8 @@ int main() {
     for (int i =0; i< row1; i++) {
 	for (int j=0; j<col1; j++) {
 	    cin >> value;
-	    row.push_back(value);
+	    gsl_matrix_set(matrix1,i,j,value);
 	}
-	matrix1.push_back(row);
 	row.clear();
     }
 
@@ -52,30 +60,36 @@ int main() {
     for (int i =0; i< row2; i++) {
         for (int j=0; j<col2; j++) {
             cin >> value;
-            row.push_back(value);
+             gsl_matrix_set(matrix2,i,j,value);
+	     //	    row.push_back(value);
         }
-        matrix2.push_back(row);
-        row.clear();
+	//        matrix2.push_back(row);
+	//  row.clear();
     }
-    vector<vector<int> > result;
-    row.clear();
+
+    gsl_matrix * result = gsl_matrix_alloc(row1,col2);
+    //    vector<vector<int> > result;
+    //row.clear();
 
     for ( int i = 0; i < row1; i++ ) {
 	for (int j = 0; j < col2; j++) {
 	    value = 0;
 	    for (int k=0; k< col1; k++) {
-		value += matrix1[i][k] * matrix2[k][j];
+	      value += gsl_matrix_get(matrix1,i,k) * gsl_matrix_get(matrix2,k,j);
+	      //	      value += matrix1[i][k] * matrix2[k][j];
 	    }
-	    row.push_back(value);
+	    gsl_matrix_set(result,i,j,value);
+	    //	    row.push_back(value);
 	}
-	result.push_back(row);
-	row.clear();
+	//	result.push_back(row);
+	//	row.clear();
     }
 
     cout << "Matrix #1:\n";
     for (int i =0; i< row1; i++) {
         for (int j=0; j<col1; j++) {
-            cout << matrix1[i][j] << " ";
+	  cout << gsl_matrix_get(matrix1,i,j) << " ";
+	  //            cout << matrix1[i][j] << " ";
 	}
 	cout << endl;
     }
@@ -83,7 +97,8 @@ int main() {
     cout << "Matrix #2:\n";
     for (int i =0; i< row2; i++) {
         for (int j=0; j<col2; j++) {
-            cout << matrix2[i][j] << " ";
+	  cout << gsl_matrix_get(matrix2,i,j) << " ";
+	  //            cout << matrix2[i][j] << " ";
         }
         cout << endl;
     }
@@ -91,7 +106,8 @@ int main() {
     cout << "Result:\n";
     for (int i =0; i< row1; i++) {
         for (int j=0; j<col2; j++) {
-            cout << result[i][j] << " ";
+	  cout << gsl_matrix_get(result,i,j) << " ";
+	  //            cout << result[i][j] << " ";
         }
         cout << endl;
     }
