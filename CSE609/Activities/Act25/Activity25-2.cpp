@@ -1,0 +1,48 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+  
+  float sum1 = 0;
+
+  for (float i = 1; i < 10000; i++) {
+    sum1 += 1/i;
+    //  cout << sum1 << endl;
+  }
+  cout << "Low to high float sum: " << sum1 << endl;
+
+  float sum2 = 0;
+  
+  for (float i = 10000; i > 0; i--) {
+    sum2 += 1/i;
+    // cout << sum2 << endl;
+  }  
+  cout << "High to low float sum: " << sum2 << endl;
+
+
+
+
+
+
+  double sum3 = 0;
+
+  for (double i = 1; i < 10000; i++) {
+    sum3 += 1/i;
+    //  cout << sum3 << endl;                                                   
+  }
+  cout << "Low to high double sum: " << sum3 << endl;
+
+  double sum4 = 0;
+
+  for (double i = 10000; i > 0; i--) {
+    sum4 += 1/i;
+    // cout << sum4 << endl;                                                    
+  }
+  cout << "High to low double sum: " << sum4 << endl;
+
+
+
+  
+  return 0;
+}
