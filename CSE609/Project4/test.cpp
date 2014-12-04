@@ -9,12 +9,13 @@
 #include "gnuplot-iostream.h"
 
 int main() {
-  Gnuplot gp;
-  gp << "set terminal png\n";
+  //Gnuplot gp;
+  
  // Create a script which can be manually fed into gnuplot later:
   //    Gnuplot gp(">script.gp");
   // Create script and also feed to gnuplot:
-  //Gnuplot gp("tee plot.gp | gnuplot -persist");
+  Gnuplot gp("tee plot.gp | gnuplot -persist");
+  gp << "set terminal png\n";
   // Or choose any of those options at runtime by setting the GNUPLOT_IOSTREAM_CMD
   // environment variable.
 
