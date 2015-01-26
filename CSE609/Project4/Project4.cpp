@@ -126,7 +126,7 @@ void gnuplot() {
 								set xlabel 'Year' rotate parallel offset 0,-1  font 'Arial-Bold'\n\
 									set ylabel 'Month' rotate parallel  font 'Arial-Bold'\n\
 										 set zlabel 'Magnitude' rotate parallel font 'Arial-Bold'\n\
-											set xrange [2001:2013]\n";
+											set xrange [1948:2014]\n";
 	gp << "splot 'weather_data.txt' using 1:2:3 notitle with pm3d\n";
 	//gp.send1d(boost::make_tuple(year,month, minTemp));//, pts_B_dx, pts_B_dy));
 	

@@ -11,5 +11,5 @@ set surface
 								set xlabel 'Year' rotate parallel offset 0,-1  font 'Arial-Bold'
 									set ylabel 'Month' rotate parallel  font 'Arial-Bold'
 										 set zlabel 'Magnitude' rotate parallel font 'Arial-Bold'
-											set xrange [2001:2013]
+											set xrange [1948:2014]
 splot 'weather_data.txt' using 1:2:3 notitle with pm3d
