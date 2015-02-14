@@ -1,0 +1,29 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
+  
+  int pH;
+  cout << "Enter a pH value: ";
+  cin >> pH;
+  cout << endl;
+
+  if (pH < 3) {
+    cout << "Solution is very acidic" << endl;
+  }
+  else if ((pH >= 3) && (pH < 7)) {
+    cout << "Solution is acidic" << endl;
+  }
+  else if (pH == 7) {
+    cout << "Solution is neutral" << endl;
+  }
+  else if ((pH > 7) && (pH < 12)) {
+    cout << "Solution is alkaline" << endl;
+  }
+  else {
+    cout << "Solution is very alkaline" << endl;
+  }
+
+  return 0;
+}
