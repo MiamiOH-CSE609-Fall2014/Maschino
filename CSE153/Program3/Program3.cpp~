@@ -1,0 +1,39 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+
+  string name;
+  int age;
+  int time[3];
+  string ageCategory;
+  string qualification;
+
+  cout << "Enter a first name and last name (i.e., Bob Jones): ";
+  cin >> name;
+
+  cout << "Enter an age for " << name << ": ";
+  cin >> age;
+
+  cout << "Enter time as hours minutes seconds: ";
+  cin >> time[0];
+  cin >> time[1];
+  cin >> time[2];
+
+  if (age < 13) {
+    ageCategory = "Youth";
+
+  }
+  else if ((age >= 13) && (age < 21)) {
+    
+  }
+  else if (age >= 21) {
+
+  }
+
+  cout << name << " is in age category " << ageCategory << " (" << age << "), time (" << time[0] << ":" << time[1] << ":" << time[2] << ") is " << qualification << endl;
+
+  return 0;
+}
